@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIYAZAKI TOURISM ARCHIVE // 宮崎市観光統計 インタラクティブWEBレポート (2013-2025)</title>
+  <meta name="description" content="宮崎市観光統計（平成25年〜令和7年）13年間の公式定量データを完全網羅したMonadスタイルのエディトリアル・テックジャーナル。ウォームパーチメント基盤、Untitled Serif、Diatype Mono、1倍速自動ループ再生、2年度比較シミュレーターを搭載。">
+  
+  <!-- Google Fonts: Newsreader (Editorial Serif 400) & JetBrains Mono (Technical Mono 400/500) & Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Chart.js (Local bundle with fallback) -->
+  <script src="js/chart.min.js"></script>
+  <script>window.Chart || document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"><\/script>')</script>
+</head>
+<body>
+
+  <!-- Monad Announcement Bar (Full-Width Black Bar) -->
+  <aside class="announcement-bar">
+    <div class="announcement-content">
+      <span class="announcement-tag">EDITION 2025.10</span>
+      <span>MIYAZAKI TOURISM ARCHIVE // 13-YEAR OFFICIAL QUANTITATIVE DATASET (2013—2025)</span>
+    </div>
+    <a href="#sectionTable" class="announcement-cta" id="ctaTableLink">DATA REPOSITORY →</a>
+  </aside>
+
+  <div class="dashboard-container atmospheric-wash-container">
+    <div class="atmospheric-wash"></div>
+
+    <!-- Top Header (Monad Editorial Layout) -->
+    <header class="header-wrapper">
+      <div class="top-bar">
+        <div class="brand-meta">
+          <span class="brand-dot-mark"></span>
+          <span class="brand-logo-text">MIYAZAKI // TOURISM ARCHIVE</span>
+          <span class="brand-sub-badge">13-YEAR MUNICIPAL JOURNAL</span>
+        </div>
+        <div class="header-actions">
+          <button class="btn-ghost-pill" onclick="window.print()">PRINT REPORT</button>
+          <button class="btn-lake-blue" id="exportCsvBtn">EXPORT CSV ▸</button>
+        </div>
+      </div>
+
+      <!-- Navigation Bar (Pill Container) -->
+      <div class="nav-pill-container">
+        <nav class="nav-pill" role="tablist">
+          <button class="nav-link active" data-target="dashboard">年次動向ダッシュボード</button>
+          <button class="nav-link" data-target="compare">年度を指定して比較</button>
+          <button class="nav-link" data-target="macro">13年総括分析</button>
+          <button class="nav-link" data-target="timeline">歴史年表</button>
+          <button class="nav-link" data-target="table">データ一覧・CSV</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Title Block (Untitled Serif 400 + Mono Subtext) -->
+    <section class="hero-editorial">
+      <div class="hero-headline-block">
+        <div class="pipeline-tag">
+          <span class="pipeline-tag-dot"></span>
+          <span>DATA PIPELINE: NORMALIZED MUNICIPAL STATS (2013–2025)</span>
+        </div>
+        <h1 class="hero-display-title">
+          A technical and cultural chronicle of <span class="serif-accent">Miyazaki tourism</span>.
+        </h1>
+        <p class="hero-subheadline">
+          宮崎市発行の公式「観光統計」13年分（平成25年〜令和7年）を完全構造化。過度な装飾を排したウォームパーチメント基盤上で、入込客数・延べ宿泊・インバウンド・観光消費額のダイナミクスを技術マニュアルのように精密に読み解きます。
+        </p>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 1: DASHBOARD VIEW
+         ====================================================================== -->
+    <main id="sectionDashboard" class="report-section">
+
+      <!-- Year Controller Card (Parchment, 1px Ash border, 40px Radius) -->
+      <section class="year-controller-card">
+        <div class="controller-header">
+          <div class="controller-year-main">
+            <span class="current-year-jp" id="yearDisplayJp">平成25年</span>
+            <span class="current-year-ad" id="yearDisplayAd">(2013)</span>
+            <span class="theme-pill-tag" id="yearThemeChip">WBC日本代表合宿・年間入込客数557万人</span>
+          </div>
+
+          <div class="playback-unit">
+            <button class="btn-play-lake playing" id="playBtn" title="一時停止">❚❚</button>
+            <div class="speed-control-capsule">
+              <button class="btn-speed-item" data-speed="2500">0.5x</button>
+              <button class="btn-speed-item active" data-speed="1500">1.0x</button>
+              <button class="btn-speed-item" data-speed="800">2.0x</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="slider-rail">
+          <input type="range" id="timelineSlider" class="timeline-slider" min="0" max="12" step="1" value="0" aria-label="年次タイムラインスライダー">
+          <div class="slider-ticks-container" id="sliderTicks">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- KPI Grid (Monad Feature Cards: 40px radius, 1 Elevated in Periwinkle Mist) -->
+      <section class="kpi-row">
+        <!-- 観光入込客数 (Elevated Feature Card: Periwinkle Mist #cfdaf5) -->
+        <div class="kpi-card elevated-periwinkle">
+          <div class="kpi-top-meta">
+            <span class="kpi-title">Total Visitors</span>
+            <span class="kpi-tag-mini">PIPELINE: IN/OUT</span>
+          </div>
+          <div class="kpi-number-group">
+            <span class="kpi-big-number" id="kpiVisitorsVal">5,845</span>
+            <span class="kpi-unit-label">千人 (585万人)</span>
+          </div>
+          <div class="kpi-bottom-row">
+            <span id="kpiVisitorsSub">県外: 2,272千人 / 県内: 3,573千人</span>
+            <span class="yoy-tag positive" id="kpiVisitorsYoy">+6.3%</span>
+          </div>
+          <div class="kpi-split-bar">
+            <div class="kpi-split-segment" id="barVisitorsOutside" style="background:var(--color-lake-blue); width:38.9%;"></div>
+            <div class="kpi-split-segment" id="barVisitorsInside" style="background:var(--color-off-black); width:61.1%;"></div>
+          </div>
+        </div>
+
+        <!-- 延べ宿泊客数 (Parchment Card) -->
+        <div class="kpi-card">
+          <div class="kpi-top-meta">
+            <span class="kpi-title">Overnight Stays</span>
+            <span class="kpi-tag-mini">CITY & RESORT</span>
+          </div>
+          <div class="kpi-number-group">
+            <span class="kpi-big-number" id="kpiStaysVal">2,277</span>
+            <span class="kpi-unit-label">千人 (228万人)</span>
+          </div>
+          <div class="kpi-bottom-row">
+            <span id="kpiStaysSub">宮崎地区: 1,954千人 / 青島地区: 323千人</span>
+            <span class="yoy-tag negative" id="kpiStaysYoy">-16.1%</span>
+          </div>
+          <div class="kpi-split-bar">
+            <div class="kpi-split-segment" id="barStaysMiyazaki" style="background:var(--color-off-black); width:85.8%;"></div>
+            <div class="kpi-split-segment" id="barStaysAoshima" style="background:var(--color-smoke); width:14.2%;"></div>
+          </div>
+        </div>
+
+        <!-- 外国人延べ宿泊者数 (Parchment Card) -->
+        <div class="kpi-card">
+          <div class="kpi-top-meta">
+            <span class="kpi-title">Inbound Guests</span>
+            <span class="kpi-tag-mini">OVERSEAS</span>
+          </div>
+          <div class="kpi-number-group">
+            <span class="kpi-big-number" id="kpiInboundVal">100,300</span>
+            <span class="kpi-unit-label">人</span>
+          </div>
+          <div class="kpi-bottom-row">
+            <span id="kpiInboundSub">首位市場: 韓国 (46,963人)</span>
+            <span class="yoy-tag negative" id="kpiInboundYoy">-23.4%</span>
+          </div>
+          <div class="kpi-split-bar">
+            <div class="kpi-split-segment" style="background:var(--color-lake-blue); width:100%;"></div>
+          </div>
+        </div>
+
+        <!-- 観光消費額 (Parchment Card) -->
+        <div class="kpi-card">
+          <div class="kpi-top-meta">
+            <span class="kpi-title">Tourism Spending</span>
+            <span class="kpi-tag-mini">OKU-YEN</span>
+          </div>
+          <div class="kpi-number-group">
+            <span class="kpi-big-number" id="kpiSpendingVal">718.9</span>
+            <span class="kpi-unit-label">億円</span>
+          </div>
+          <div class="kpi-bottom-row">
+            <span id="kpiSpendingSub">1人当宿泊: ¥8,018 / 日帰り: ¥2,002</span>
+            <span class="yoy-tag positive" id="kpiSpendingYoy">+0.0%</span>
+          </div>
+          <div class="kpi-split-bar">
+            <div class="kpi-split-segment" style="background:var(--color-lake-blue); width:69.9%;"></div>
+            <div class="kpi-split-segment" style="background:var(--color-ash); width:30.1%;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Editorial Narrative Board Box -->
+      <section class="narrative-editorial-card">
+        <div class="eyebrow-label">TECHNICAL MEMORANDUM // ANNUAL DYNAMICS & DRIVERS</div>
+        <h2 class="narrative-title" id="narrativeYearTitle">平成25年の観光動向ハイライト</h2>
+        <p class="narrative-text" id="narrativeBody">WBC日本代表候補の宮崎合宿が大盛況。好天による海水浴場利用増や記紀編さん1300年事業の集客効果で入込客数が前年比6.3%増加。</p>
+
+        <div class="factors-split">
+          <div class="factor-col pos">
+            <h4>POSITIVE DRIVERS // 増加要因・集客促進</h4>
+            <ul class="factor-ul" id="positiveFactorsList"></ul>
+          </div>
+          <div class="factor-col neg">
+            <h4>NEGATIVE IMPEDIMENTS // 減少要因・外的阻害要因</h4>
+            <ul class="factor-ul" id="negativeFactorsList"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chart Grid Duo (Monad 40px radius cards, Hairline Ash borders) -->
+      <section class="chart-grid-duo">
+        <div class="card-monad">
+          <div class="card-header-simple">
+            <h3 class="card-heading-sec">Long-Term Trajectory // 13年間の入込・宿泊推移</h3>
+            <div class="card-sub-mono">2013—2025 MACRO TREND (THOUSAND VISITORS & STAYS)</div>
+          </div>
+          <div class="chart-box">
+            <canvas id="chartMacro"></canvas>
+          </div>
+        </div>
+
+        <div class="card-monad">
+          <div class="card-header-simple">
+            <h3 class="card-heading-sec">Inbound Composition // 国・地域別外国人宿泊比率</h3>
+            <div class="card-sub-mono">MARKET SHARE BY NATIONALITY / REGION</div>
+          </div>
+          <div class="chart-box">
+            <canvas id="chartInbound"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chart Grid Trio (Monad Cards) -->
+      <section class="chart-grid-trio">
+        <div class="card-monad">
+          <div class="card-header-simple">
+            <h3 class="card-heading-sec">Seasonal Rhythm // 月別季節推移</h3>
+            <div class="card-sub-mono">MONTHLY DISTRIBUTION (JAN-DEC)</div>
+          </div>
+          <div class="chart-box">
+            <canvas id="chartMonthly"></canvas>
+          </div>
+        </div>
+
+        <div class="card-monad">
+          <div class="card-header-simple">
+            <h3 class="card-heading-sec">Key Facilities // 主要観光施設来場動向</h3>
+            <div class="card-sub-mono">ATTENDANCE AT MAJOR SITES & FACILITIES</div>
+          </div>
+          <div class="chart-box">
+            <canvas id="chartFacility"></canvas>
+          </div>
+        </div>
+
+        <div class="card-monad">
+          <div class="card-header-simple">
+            <h3 class="card-heading-sec">Spending Breakdown // 観光消費額 費目内訳</h3>
+            <div class="card-sub-mono">EXPENDITURE STRUCTURE (OKU-YEN)</div>
+          </div>
+          <div class="chart-box">
+            <canvas id="chartSpending"></canvas>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ======================================================================
+         SECTION 2: 2-YEAR COMPARISON SIMULATOR (年度を指定して比較)
+         ====================================================================== -->
+    <section id="sectionCompare" class="report-section">
+      <div class="section-title-block">
+        <div class="pipeline-tag">
+          <span class="pipeline-tag-dot"></span>
+          <span>COMPARATIVE ANALYSIS // 2年度直接対比</span>
+        </div>
+        <h2 class="section-display-title">
+          年度を指定して比較 <span class="serif-accent">// 2-Year Comparison Simulator</span>
+        </h2>
+        <p class="section-subheadline">
+          比較したい任意の2つの年度を選択すると、入込客数・延べ宿泊・インバウンド・観光消費額・宿泊単価・春季キャンプ来場の増減差分および直接対比チャートが即座に算出・表示されます。
+        </p>
+      </div>
+
+      <div class="compare-bar">
+        <div class="select-wrapper">
+          <label for="selectYearA">比較対象 A (年度):</label>
+          <select id="selectYearA" class="monad-select" aria-label="比較年度 A"></select>
+        </div>
+        <div class="badge-vs">VS</div>
+        <div class="select-wrapper">
+          <label for="selectYearB">基準年度 B (年度):</label>
+          <select id="selectYearB" class="monad-select" aria-label="基準年度 B"></select>
+        </div>
+      </div>
+
+      <div class="compare-cards-grid">
+        <div class="compare-mini-card" id="compareVisitors"></div>
+        <div class="compare-mini-card" id="compareStays"></div>
+        <div class="compare-mini-card" id="compareInbound"></div>
+        <div class="compare-mini-card" id="compareSpending"></div>
+        <div class="compare-mini-card" id="comparePerStay"></div>
+        <div class="compare-mini-card" id="compareCamp"></div>
+      </div>
+
+      <div class="card-monad" style="margin-bottom: 48px;">
+        <div class="card-header-simple">
+          <h3 class="card-heading-sec">Comparative Scaled Metrics // 指標直接対比チャート</h3>
+          <div class="card-sub-mono">METRICS SCALED TO TEN THOUSAND / 10 OKU-YEN (万人・10億円換算)</div>
+        </div>
+        <div class="chart-box" style="min-height: 320px;">
+          <canvas id="chartCompare"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 3: MACRO INSIGHTS
+         ====================================================================== -->
+    <section id="sectionMacro" class="report-section">
+      <div class="section-title-block">
+        <div class="pipeline-tag">
+          <span class="pipeline-tag-dot"></span>
+          <span>STRUCTURAL ANALYSIS // 13年間の軌跡</span>
+        </div>
+        <h2 class="section-display-title">
+          13年間の構造変化と総括インサイト <span class="serif-accent">// Macro Insights</span>
+        </h2>
+        <p class="section-subheadline">
+          平成25年〜令和7年の13年間で宮崎市観光が遂げた4つの決定的な構造転換をデータから紐解きます。
+        </p>
+      </div>
+
+      <div class="macro-block-container">
+        
+        <div class="macro-monad-card">
+          <span class="macro-step-num">// STRUCTURAL INSIGHT 01</span>
+          <h3 class="macro-card-h3">1. コロナ危機からのV字回復と「宿泊・滞在型」への確かな転換</h3>
+          <p class="macro-card-p">
+            平成25年〜令和元年にかけて年間約600万人水準で推移していた観光入込客数は、令和2〜3年のコロナ禍で約320〜370万人台へと急減しました。しかし令和4年以降、行動制限緩和と全国旅行支援により急速に回復し、令和5年には618万人、令和6年611万人、令和7年586万人とコロナ前水準を完全に回復。<br>
+            特に注目すべきは、<strong>延べ宿泊客数が令和元年（259.8万人）に迫る253.6万人まで増加</strong>しており、日帰り通過型観光から滞在・宿泊型へのシフトが結実しています。
+          </p>
+        </div>
+
+        <div class="macro-monad-card">
+          <span class="macro-step-num">// STRUCTURAL INSIGHT 02</span>
+          <h3 class="macro-card-h3">2. 外国人宿泊客（インバウンド）が過去最高18.5万人へ飛躍</h3>
+          <p class="macro-card-p">
+            インバウンド宿泊客数は、コロナ禍の令和3年に5,097人（約97%消失）にまで壊滅的な打撃を受けました。しかし水際制限の撤廃後、タイガーエア台湾の就航、チャイナエアライン台北線の増便、アシアナ航空ソウル便の増便、そして歴史的円安が強力な追い風となり、<strong>令和7年には史上最多の184,922人（前年比+35.0%）を記録</strong>。台湾市場は33,687人（前年比+81%増）と急拡大し、韓国（58,772人）に次ぐ柱として定着しました。
+          </p>
+        </div>
+
+        <div class="macro-monad-card">
+          <span class="macro-step-num">// STRUCTURAL INSIGHT 03</span>
+          <h3 class="macro-card-h3">3. メガイベントとプロ野球春季キャンプの圧倒的経済牽引力</h3>
+          <p class="macro-card-p">
+            宮崎市の観光サイクルは、2月の「プロ野球春季キャンプ」と国家的メガイベントによって大きなピークを刻みます。
+            <ul style="margin-top: 10px; margin-left: 20px; list-style: disc;">
+              <li style="margin-top: 6px;"><strong>平成25・29年・令和5年</strong>：WBC（侍ジャパン）宮崎合宿。特に2023年（令和5年）はダルビッシュ有選手ら集結により、<strong>2月単月で史上初の100万人突破（100.7万人）</strong>を達成。</li>
+              <li style="margin-top: 6px;"><strong>令和6年9月</strong>：日向坂46「ひなたフェス2024」がひなたサンマリンスタジアム宮崎で開催。通常は夏休み明けで落ち着く9月の入込客数が41.0万人に跳ね上がり、全国のファンが市内を巡礼。</li>
+              <li style="margin-top: 6px;"><strong>令和6年11月</strong>：宮崎市制100周年記念イベント「SMILE MIYAZAKI 100年祭」が開催され、市民一体の祝祭ムードを創出。</li>
+            </ul>
+          </p>
+        </div>
+
+        <div class="macro-monad-card">
+          <span class="macro-step-num">// STRUCTURAL INSIGHT 04</span>
+          <h3 class="macro-card-h3">4. 観光消費額が1,500億円規模へ倍増・宿泊単価の高付加価値化</h3>
+          <p class="macro-card-p">
+            観光消費額総額は、平成25年の718億円から、コロナ底（令和3年: 406億円）を経て、<strong>令和5年には1,536億円（過去最高）、令和7年も1,478億円</strong>と高位推移しています。<br>
+            特筆すべきは、1人当たり宿泊消費単価の上昇（平成25年: 8,018円 → <strong>令和6・7年: 約19,800円〜19,900円へと2.5倍に伸長</strong>）であり、インバウンド比率の増加と宿泊高付加価値化が観光消費総額を倍増させています。
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 4: HISTORICAL CHRONOLOGY TAPE
+         ====================================================================== -->
+    <section id="sectionTimeline" class="report-section">
+      <div class="section-title-block">
+        <div class="pipeline-tag">
+          <span class="pipeline-tag-dot"></span>
+          <span>HISTORICAL MILESTONES // 観光の歩み</span>
+        </div>
+        <h2 class="section-display-title">
+          宮崎市観光のあゆみ <span class="serif-accent">// Historical Chronology</span>
+        </h2>
+        <p class="section-subheadline">
+          昭和34年の巨人軍キャンプ開始から令和7年までの歴史的出来事を横スクロール年表で閲覧できます（クリックで該当年度のダッシュボードへジャンプ）。
+        </p>
+      </div>
+
+      <div class="timeline-tape-wrapper">
+        <div class="timeline-tape" id="timelineEventsContainer">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 5: DATA REPOSITORY & CSV
+         ====================================================================== -->
+    <section id="sectionTable" class="report-section">
+      <div class="section-title-block">
+        <div class="pipeline-tag">
+          <span class="pipeline-tag-dot"></span>
+          <span>MASTER DATASET // 完全記録一覧</span>
+        </div>
+        <h2 class="section-display-title">
+          全13年データリポジトリ <span class="serif-accent">// Data Repository & Export</span>
+        </h2>
+        <p class="section-subheadline">
+          平成25年〜令和7年の全主要指標を網羅した構造化データリポジトリ。インクリメンタル検索に対応し、ワンクリックでUTF-8 BOM付きCSV形式でダウンロード可能です。
+        </p>
+      </div>
+
+      <div class="table-card-monad">
+        <div class="table-search-bar">
+          <input type="text" id="tableSearchInput" class="monad-input" placeholder="SEARCH REPOSITORY (e.g. 令和, WBC, キャンプ)...">
+          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--color-smoke); text-transform: uppercase;">
+            SOURCE: MIYAZAKI CITY OFFICIAL TOURISM STATISTICS (13 YEARS)
+          </span>
+        </div>
+
+        <div class="table-scroll">
+          <table class="monad-table">
+            <thead>
+              <tr>
+                <th>年次 (西暦)</th>
+                <th>観光入込客数(千人)</th>
+                <th>うち県外客(千人)</th>
+                <th>うち県内客(千人)</th>
+                <th>延べ宿泊客数(千人)</th>
+                <th>宿泊県外客(千人)</th>
+                <th>宿泊県内客(千人)</th>
+                <th>外国人宿泊客(人)</th>
+                <th>観光消費額(億円)</th>
+                <th>宿泊単価(円)</th>
+                <th>日帰り単価(円)</th>
+                <th style="text-align:left;">主なテーマ・動向</th>
+              </tr>
+            </thead>
+            <tbody id="dataTableBody">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer (Monad Warm Parchment & Hairline Ash) -->
+    <footer class="editorial-footer">
+      <div class="footer-top-line">
+        <span class="footer-brand">MIYAZAKI // TOURISM ARCHIVE</span>
+        <span class="footer-meta">SOURCE: MIYAZAKI CITY TOURISM STATISTICS (2013—2025)</span>
+      </div>
+      <div class="footer-bottom-copy">
+        A technical and editorial chronicle visualizing 13 years of municipal tourism data. Typeset in Untitled Serif 400 and ABC Diatype Mono on warm parchment (#f6f3f1) with Lake Blue (#2b59d1) punctuation.
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Monad Assistant Widget (Editorial Tech Assistant) -->
+  <aside class="monad-assistant-widget" id="assistantWidget">
+    <div class="widget-header">
+      <div class="widget-title-group">
+        <span class="widget-dot"></span>
+        <span class="widget-title">Historical Milestones</span>
+      </div>
+      <button class="widget-toggle-btn" id="widgetToggleBtn" title="最小化/展開">−</button>
+    </div>
+    <div class="widget-body" id="widgetBody">
+      <p class="widget-prompt">Jump to landmark years in the 13-year dataset:</p>
+      <div class="widget-suggestion-chips">
+        <button class="suggestion-chip" data-year="12">
+          <span>令和7年: Inbound High (18.5万人)</span>
+          <span class="chip-status-mini" style="color:var(--color-lake-blue);">2025</span>
+        </button>
+        <button class="suggestion-chip" data-year="11">
+          <span>令和6年: Hinata Fes 2024</span>
+          <span class="chip-status-mini">2024</span>
+        </button>
+        <button class="suggestion-chip" data-year="10">
+          <span>令和5年: WBC Samurai Japan</span>
+          <span class="chip-status-mini">2023</span>
+        </button>
+        <button class="suggestion-chip" data-year="8">
+          <span>令和3年: Pandemic Impact</span>
+          <span class="chip-status-mini" style="color:#c93b2b;">2021</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- App Data & Logic -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
