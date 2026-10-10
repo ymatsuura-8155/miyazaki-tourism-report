@@ -6,25 +6,6 @@
 
 ---
 
-## 🎨 デザインコンセプト：Monad（editorial tech journal on warm parchment）
-
-- **キャンバス**: 白テンプレートと一線を画す、温かみのあるパーチメント基盤（`#f6f3f1`）。
-- **タイポグラフィの二重奏（Serif × Mono）**:
-  - **見出し（Untitled Serif）**: 太字を一切使わず、ウェイト400に固定。セリフ特有のストローク対比と計算された字間（-0.02em）によって、大声を張り上げることなく知的な権威を醸成（「The serif announces, the mono instructs」）。
-  - **本文・UI・数値（ABC Diatype Mono / JetBrains Mono）**: 本文、ボタン、ナビ、数値、ラベルのすべてを等幅フォントで統一し、技術マニュアルのような明晰さとデータ性を付与。
-- **色彩体系**:
-  - **Lake Blue (`#2b59d1`)**: 唯一の彩度を持ったアクセント。主要アクション（CSV出力や再生ボタン等）に限定して使用。
-  - **Periwinkle Mist (`#cfdaf5`)**: 視線を惹きつける唯一の高位カード（Total Visitorsカード）に採用。
-  - **Off-Black (`#242424`)** / **Ink (`#000000`)**: 最上部アナウンスメントバー、主テキスト、セカンダリボタン。
-  - **Ash (`#cecac8`)**: セクションやカードを分かつ繊細な1pxヘアラインボーダー。
-  - **大気グラデーション（Atmospheric Wash）**: コーラル（`#ff9473`）、スカイブルー（`#a0b5eb`）、ミント（`#a7fccd`）の微細なぼかし光彩。
-- **造形・レイアウト**:
-  - カード角丸：40px（`--radius-cards: 40px`）、40pxパディング、ドロップシャドウなし（1px Ash境界線のみ）。
-  - ボタン・ナビ：100pxピル型（`--radius-buttons: 100px`）。
-  - タグ・バッジ：9999pxフルピル型（パイプラインノードタグ）。
-
----
-
 ## 🌟 主な機能と特徴
 
 ### 1. タイムラインスライダー & 1倍速デフォルト自動再生
@@ -65,53 +46,3 @@
 ### 8. Historical Milestones（アシスタントウィジェット）
 - 画面右下に常駐し、主要な歴史的マイルストーン（令和7年インバウンド記録、令和6年ひなたフェス、令和5年WBC、令和3年コロナ禍）へワンタップで遷移可能。
 
----
-
-## 📂 ファイル構成とGitHub公開ガイド
-
-### ファイル構成一覧
-```
-複数PDFからHTMLWEBレポートを作る/
-├── index.html                   # メインWEBレポート（エントリーポイント）
-├── README.md                    # 本ドキュメント
-├── .gitignore                   # Git除外設定ファイル
-├── css/
-│   └── style.css                # Monadスタイルシート
-├── js/
-│   ├── app.js                   # アプリケーションロジック（スライダー・自動再生・チャート）
-│   ├── chart.min.js             # オフライン完全対応用 Chart.js ライブラリ
-│   └── data.js                  # 13年分の構造化データ（JSONオブジェクト）
-├── data/
-│   ├── miyazaki_tourism_master.json # 完全抽出マスターデータセット
-│   └── *.pdf                    # ソースPDF（全13年分）
-└── scripts/
-    ├── build_master_dataset.py  # データセット抽出・整形スクリプト
-    └── ...
-```
-
-### GitHubへの登録・公開手順（GitHub Pages）
-
-1. **GitHubにプッシュする必須ファイル**:
-   - `index.html`（ルート直下にあるため、GitHub Pagesでそのまま公開可能）
-   - `css/style.css`
-   - `js/app.js`, `js/data.js`, `js/chart.min.js`
-   - `data/miyazaki_tourism_master.json`（必要に応じて）
-   - `README.md`
-   - `.gitignore`
-
-   > **注意**: 容量の大きい元PDFファイル（`data/*.pdf`）はWebページの動作には必須ではありません。リポジトリ容量を軽量に保ちたい場合は、PDFファイルを `.gitignore` に追加してコミットから除外しても問題ありません。
-
-2. **GitHub Pagesの設定**:
-   - GitHubリポジトリの **Settings** > **Pages** を開きます。
-   - **Source** で `Deploy from a branch` を選択。
-   - **Branch** を `main`（または `master`）、フォルダを `/ (root)` に設定して **Save** をクリック。
-   - 数分後、発行されたURL（例: `https://<username>.github.io/<repo-name>/`）にアクセスすれば全世界に公開されます。
-
----
-
-## 🚀 ローカルでの閲覧方法
-
-特別なサーバー起動や環境構築は一切不要です：
-1. ファイルマネージャー（Finder）で `index.html` をダブルクリックするか、
-2. Google Chrome、Safari、Edge 等のブラウザに `index.html` をドラッグ＆ドロップしてください。
-3. 完全オフライン環境でもすべてのグラフ・アニメーションが動作します。
